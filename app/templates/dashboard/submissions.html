@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+
+{% block title %}{{ _('My Submissions') }} - RemoteLab{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="section-title mb-0">{{ _('My Submissions') }}</h2>
+    <a href="{{ url_for('user.dashboard') }}" class="btn btn-outline-secondary btn-sm">
+        <i class="bi bi-arrow-left"></i> {{ _('Back to Dashboard') }}
+    </a>
+</div>
+
+<div class="card lab-card shadow-sm border-0">
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="bg-light">
+                    <tr>
+                        <th class="ps-4">{{ _('Experiment') }}</th>
+                        <th>{{ _('Date') }}</th>
+                        <th>{{ _('Status') }}</th>
+                        <th>{{ _('Score') }}</th>
+                        <th class="pe-4">{{ _('Feedback') }}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% if submissions %}
+                    {% for submission in submissions %}
+                    <tr>
+                        <td class="ps-4">
+                            <div class="fw-bold">{{ submission.experiment.title }}</div>
+                            <div class="text-muted small">{{ submission.experiment.category }}</div>
+                        </td>
+                        <td class="text-muted">{{ submission.submitted_at.strftime('%Y-%m-%d %H:%M') }}</td>
+                        <td>
+                            {% if submission.score is not none %}
+                            <span class="badge bg-success-subtle text-success border border-success-subtle">
+                                <i class="bi bi-check-circle-fill me-1"></i> Graded
+                            </span>
+                            {% else %}
+                            <span class="badge bg-warning-subtle text-warning border border-warning-subtle">
+                                <i class="bi bi-clock-history me-1"></i> Pending
+                            </span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if submission.score is not none %}
+                            <span class="fw-bold text-primary">{{ submission.score }} pts</span>
+                            {% else %}
+                            <span class="text-muted">--</span>
+                            {% endif %}
+                        </td>
+                        <td class="pe-4">
+                            {% if submission.feedback %}
+                            <div class="small fst-italic text-muted">"{{ submission.feedback }}"</div>
+                            {% else %}
+                            <span class="text-muted small">{{ _('No feedback yet') }}</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                    {% else %}
+                    <tr>
+                        <td colspan="5" class="text-center py-5 text-muted">
+                            <i class="bi bi-inbox fs-1 d-block mb-3 opacity-25"></i>
+                            {{ _('No submissions yet. Start your first experiment!') }}
+                        </td>
+                    </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

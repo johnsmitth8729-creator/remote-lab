@@ -1,0 +1,117 @@
+{% extends "base.html" %}
+
+{% block title %}{{ _('Student Dashboard') }} - RemoteLab{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="section-title mb-0">{{ _('Student Dashboard') }}</h2>
+    <div class="text-end">
+        <span class="badge bg-primary rounded-pill px-3 py-2">
+            <i class="bi bi-star-fill me-1"></i> {{ stats.points }} {{ _('Points') }}
+        </span>
+    </div>
+</div>
+
+<div class="row g-4 mb-5">
+    <!-- Stats Cards -->
+    <div class="col-md-4">
+        <div class="card lab-card text-center p-3 border-start border-4 border-primary">
+            <div class="card-body">
+                <div class="text-muted small mb-1">{{ _('Completed Experiments') }}</div>
+                <div class="h2 fw-bold">{{ stats.completed }}</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card lab-card text-center p-3 border-start border-4 border-success">
+            <div class="card-body">
+                <div class="text-muted small mb-1">{{ _('Current Rank') }}</div>
+                <div class="h2 fw-bold text-success">{{ stats.rank }}</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card lab-card text-center p-3 border-start border-4 border-info">
+            <div class="card-body">
+                <div class="text-muted small mb-1">{{ _('Available Labs') }}</div>
+                <div class="h2 fw-bold text-info">8</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <!-- Recommended Labs -->
+    <div class="col-lg-8">
+        <h4 class="mb-4">{{ _('Recommended for You') }}</h4>
+        <div class="row g-4">
+            {% for experiment in available_experiments %}
+            <div class="col-md-6">
+                <div class="card lab-card h-100">
+                    <div class="card-body">
+                        <span
+                            class="badge {% if experiment.difficulty == 'easy' %}bg-success-subtle text-success{% elif experiment.difficulty == 'medium' %}bg-warning-subtle text-warning{% else %}bg-danger-subtle text-danger{% endif %} mb-2">
+                            {{ experiment.difficulty|capitalize }}
+                        </span>
+                        <h5 class="card-title fw-bold">{{ experiment.title }}</h5>
+                        <p class="card-text text-muted small mb-4">{{ experiment.description[:100] }}...</p>
+                        <a href="{{ url_for('experiment.detail', id=experiment.id) }}" class="btn btn-primary btn-sm">{{
+                            _('Start Lab') }}</a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        <div class="mt-4 text-center">
+            <a href="{{ url_for('experiment.list_experiments') }}" class="btn btn-link">{{ _('Browse All Experiments')
+                }} <i class="bi bi-arrow-right"></i></a>
+        </div>
+    </div>
+
+    <!-- Recent Activity & Leaderboard -->
+    <div class="col-lg-4">
+        <h4 class="mb-4">{{ _('Recent Activity') }}</h4>
+        <div class="card lab-card mb-4">
+            <ul class="list-group list-group-flush rounded-3">
+                {% if submissions %}
+                {% for submission in submissions %}
+                <li class="list-group-item py-3">
+                    <div class="d-flex justify-content-between small">
+                        <span class="fw-bold">{{ submission.experiment.title }}</span>
+                        <span class="text-muted">{{ submission.submitted_at.strftime('%b %d') }}</span>
+                    </div>
+                    <div class="mt-1">
+                        <span class="badge bg-success-subtle text-success">Submitted</span>
+                        {% if submission.score %}
+                        <span class="text-primary small float-end">+{{ submission.score }} pts</span>
+                        {% endif %}
+                    </div>
+                </li>
+                {% endfor %}
+                {% else %}
+                <li class="list-group-item text-center py-5 text-muted">
+                    No recent activity found.
+                </li>
+                {% endif %}
+            </ul>
+        </div>
+
+        <h4 class="mb-4">{{ _('Top Students') }}</h4>
+        <div class="card lab-card">
+            <div class="card-body p-0">
+                <ul class="list-group list-group-flush rounded-3">
+                    {% for top_user in leaderboard %}
+                    <li class="list-group-item d-flex justify-content-between align-items-center py-3">
+                        <div class="d-flex align-items-center">
+                            <span class="fw-bold me-3 text-primary">#{{ loop.index }}</span>
+                            <span>{{ top_user.name }}</span>
+                        </div>
+                        <span class="badge bg-light text-dark border">{{ top_user.points }} pts</span>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

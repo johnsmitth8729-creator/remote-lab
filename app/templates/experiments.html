@@ -1,0 +1,41 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-4 border-bottom">
+    <h1 class="h2">{{ _('Available Experiments') }}</h1>
+</div>
+
+<div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+    {% for exp in experiments %}
+    <div class="col">
+        <div class="card h-100 shadow-sm border-0">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start mb-2">
+                    <h5 class="card-title fw-bold mb-0">{{ exp.title }}</h5>
+                    <span
+                        class="badge {% if exp.type == 'arduino' %}bg-info{% else %}bg-danger{% endif %} text-white">{{
+                        exp.type }}</span>
+                </div>
+                <p class="card-text text-muted text-truncate">{{ exp.description }}</p>
+                <div class="mt-4 pt-3 border-top d-flex justify-content-between align-items-center">
+                    <a href="{{ url_for('experiment.view_experiment', experiment_id=exp.id) }}"
+                        class="btn btn-sm btn-primary">{{ _('Open Simulation') }}</a>
+
+                    {% if user.role == 'teacher' %}
+                    <form action="{{ url_for('admin.delete_experiment', experiment_id=exp.id) }}" method="POST"
+                        class="d-inline">
+                        <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('{{ _(\"
+                            Delete this experiment?\") }}');">{{ _('Delete') }}</button>
+                    </form>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    {% else %}
+    <div class="col-12 text-center py-5">
+        <p class="text-muted">{{ _('No experiments published yet.') }}</p>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

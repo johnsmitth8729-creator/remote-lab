@@ -1,0 +1,99 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">{{ _('Dashboard') }}</h1>
+    <span class="badge bg-primary fs-6">{{ user.role | capitalize }}</span>
+</div>
+
+<div class="row">
+    <!-- Main Content Area -->
+    <div class="col-md-8">
+        <div class="card shadow-sm mb-4 border-0">
+            <div class="card-body">
+                <h5 class="card-title fw-bold">{{ _('Welcome back, %(name)s!', name=user.name) }}</h5>
+                <p class="card-text text-muted">{{ _('Manage your virtual laboratory experiments from this dashboard.')
+                    }}</p>
+                <a href="{{ url_for('experiment.list_experiments') }}" class="btn btn-primary">{{ _('Browse
+                    Experiments') }}</a>
+            </div>
+        </div>
+
+        {% if user.role == "teacher" %}
+        <div class="card shadow-sm border-0 mb-4">
+            <div class="card-header bg-white fw-bold">
+                {{ _('Create New Experiment') }}
+            </div>
+            <div class="card-body">
+                <form action="{{ url_for('admin.create_experiment') }}" method="POST">
+                    <div class="mb-3">
+                        <label class="form-label">{{ _('Title') }}</label>
+                        <input type="text" name="title" class="form-control" required>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label">{{ _('Platform Type') }}</label>
+                            <select name="type" class="form-select">
+                                <option value="arduino">{{ _('Arduino') }}</option>
+                                <option value="raspberry_pi">{{ _('Raspberry Pi Pico') }}</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">{{ _('Wokwi Project ID / URL') }}</label>
+                            <input type="text" name="wokwi_url" class="form-control"
+                                placeholder="{{ _('e.g. 123456789 or https://wokwi.com/projects/...') }}" required>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">{{ _('Description & Instructions') }}</label>
+                        <textarea name="description" class="form-control" rows="3" required></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-success">{{ _('Publish Experiment') }}</button>
+                </form>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Sidebar / Stats -->
+    <div class="col-md-4">
+        {% if user.role == "teacher" %}
+        <div class="card shadow-sm border-0 mb-4 bg-light">
+            <div class="card-body">
+                <h5 class="card-title fw-bold">{{ _('Quick Stats') }}</h5>
+                <ul class="list-group list-group-flush rounded mt-3">
+                    <li class="list-group-item d-flex justify-content-between align-items-center bg-transparent px-2">
+                        {{ _('Total Experiments') }}
+                        <span class="badge bg-primary rounded-pill">{{ experiments|length }}</span>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between align-items-center bg-transparent px-2">
+                        {{ _('Total Submissions') }}
+                        <span class="badge bg-success rounded-pill">{{ submissions|length }}</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        {% else %}
+        <div class="card shadow-sm border-0 mb-4 bg-light">
+            <div class="card-body">
+                <h5 class="card-title fw-bold">{{ _('Study Progress') }}</h5>
+                <p class="text-muted small">{{ _('You have completed %(done)s out of %(total)s experiments.',
+                    done=submissions|length, total=experiments|length) }}</p>
+
+                {% if submissions %}
+                <hr>
+                <h6 class="fw-bold mt-3 mb-2">{{ _('Recent Completions') }}</h6>
+                <ul class="list-group list-group-flush rounded">
+                    {% for sub in submissions %}
+                    <li class="list-group-item bg-transparent px-2 py-1 small text-muted">
+                        <i class="me-1 text-success">&#x2714;</i> {{ sub.experiment.title }}
+                    </li>
+                    {% endfor %}
+                </ul>
+                {% endif %}
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

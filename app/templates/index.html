@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+
+<title>{% block title %}{{ _('Welcome to RemoteLab') }}{% endblock %}</title>
+
+{% block content %}
+<div class="row align-items-center py-5">
+    <div class="col-lg-6">
+        <h1 class="display-4 fw-bold mb-4">{{ _('Master Microcontrollers') }} <span class="text-primary">{{
+                _('Remotely') }}</span></h1>
+        <p class="lead text-muted mb-5">
+            {{ _('Perform real-time Arduino and Raspberry Pi experiments using our integrated Wokwi virtual simulator.
+            Learn, build, and grow your embedded systems skills from anywhere.') }}
+        </p>
+        <div class="d-grid gap-3 d-md-flex">
+            <a href="{{ url_for('auth.register') }}" class="btn btn-primary btn-lg">{{ _('Get Started for Free') }}</a>
+            <a href="{{ url_for('experiment.list_experiments') }}" class="btn btn-outline-secondary btn-lg">{{ _('View
+                Experiments') }}</a>
+        </div>
+    </div>
+    <div class="col-lg-6 mt-5 mt-lg-0">
+        <div class="bg-white p-4 rounded-4 shadow-lg">
+            <img src="https://images.unsplash.com/photo-1517077304055-6e89abbf09b0?auto=format&fit=crop&q=80&w=800"
+                class="img-fluid rounded-3" alt="Laboratory Sim">
+        </div>
+    </div>
+</div>
+
+<div class="row mt-5 py-5 border-top">
+    <div class="col-md-4 mb-4">
+        <div class="text-center p-4">
+            <i class="bi bi-cpu fs-1 text-primary mb-3"></i>
+            <h3>{{ _('Virtual Simulation') }}</h3>
+            <p class="text-muted">{{ _('High-fidelity Wokwi simulator embedded directly in your browser. No hardware
+                needed.') }}</p>
+        </div>
+    </div>
+    <div class="col-md-4 mb-4">
+        <div class="text-center p-4">
+            <i class="bi bi-journal-check fs-1 text-primary mb-3"></i>
+            <h3>{{ _('Guided Labs') }}</h3>
+            <p class="text-muted">{{ _('Step-by-step instructions for Arduino and Raspberry Pi Pico projects.') }}</p>
+        </div>
+    </div>
+    <div class="col-md-4 mb-4">
+        <div class="text-center p-4">
+            <i class="bi bi-trophy fs-1 text-primary mb-3"></i>
+            <h3>{{ _('Gamified Learning') }}</h3>
+            <p class="text-muted">{{ _('Earn points and badges as you complete experiments and improve your ranking.')
+                }}</p>
+        </div>
+    </div>
+</div>
+{% endblock %}

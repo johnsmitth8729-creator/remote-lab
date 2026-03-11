@@ -1,0 +1,42 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-5">
+        <div class="card shadow-sm border-0 mt-5">
+            <div class="card-body p-5">
+                <h3 class="card-title text-center fw-bold text-primary mb-4">{{ _('Create Account') }}</h3>
+
+                <form method="POST" action="{{ url_for('auth.register') }}">
+                    <div class="mb-3">
+                        <label class="form-label text-muted">{{ _('Full Name') }}</label>
+                        <input type="text" name="name" class="form-control form-control-lg" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label text-muted">{{ _('Email address') }}</label>
+                        <input type="email" name="email" class="form-control form-control-lg" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label text-muted">{{ _('Password') }}</label>
+                        <input type="password" name="password" class="form-control form-control-lg" required>
+                    </div>
+                    <div class="mb-4">
+                        <label class="form-label text-muted">{{ _('Role') }}</label>
+                        <select name="role" class="form-select form-select-lg">
+                            <option value="student">{{ _('Student') }}</option>
+                            <option value="teacher">{{ _('Teacher') }}</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-lg w-100 fw-bold">{{ _('Register') }}</button>
+                </form>
+
+                <div class="text-center mt-4">
+                    <span class="text-muted">{{ _('Already have an account?') }} </span>
+                    <a href="{{ url_for('auth.login') }}" class="text-decoration-none fw-medium">{{ _('Login here')
+                        }}</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

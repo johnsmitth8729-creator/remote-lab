@@ -1,0 +1,60 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="mb-4">
+    <a href="{{ url_for('experiment.list_experiments') }}" class="text-decoration-none">&larr; {{ _('Back to
+        Experiments') }}</a>
+</div>
+
+<div class="row">
+    <!-- Details Panel -->
+    <div class="col-lg-4 mb-4">
+        <div class="card shadow-sm border-0 h-100">
+            <div class="card-body">
+                <h3 class="card-title fw-bold mb-3">{{ experiment.title }}</h3>
+                <span class="badge {% if experiment.type == 'arduino' %}bg-info{% else %}bg-danger{% endif %} mb-4">{{
+                    experiment.type }}</span>
+
+                <h5 class="fw-bold fs-6">{{ _('Description & Instructions') }}</h5>
+                <hr>
+                <p class="card-text text-body text-pre-wrap">{{ experiment.description }}</p>
+
+                {% if user.role == 'student' %}
+                <hr>
+                <h5 class="fw-bold fs-6 mt-4">{{ _('Completion Status') }}</h5>
+                {% if has_submitted %}
+                <div class="alert alert-success d-flex align-items-center mb-0 border-0" role="alert">
+                    <div>
+                        <i class="me-2">&#x2705;</i> {{ _('Already Completed') }}
+                    </div>
+                </div>
+                {% else %}
+                <form method="POST" action="{{ url_for('experiment.submit_experiment', experiment_id=experiment.id) }}">
+                    <div class="mb-3 mt-3">
+                        <label class="form-label text-muted small">{{ _('Optional Notes') }}</label>
+                        <textarea name="notes" class="form-control" rows="2"
+                            placeholder="{{ _('Any issues or observations?') }}"></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-success w-100 fw-bold">{{ _('Mark as Completed') }}</button>
+                </form>
+                {% endif %}
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Simulator Panel -->
+    <div class="col-lg-8 mb-4">
+        <div class="card shadow-sm border-0">
+            <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
+                <span><i class="me-2">&#x1F52C;</i> {{ _('Wokwi Simulator Workspace') }}</span>
+            </div>
+            <div class="card-body p-0">
+                <iframe width="100%" height="600" src="{{ experiment.wokwi_url }}"
+                    style="border: none; border-radius: 0 0 5px 5px;">
+                </iframe>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

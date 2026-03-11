@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+
+{% block title %}{{ experiment.title }} - RemoteLab{% endblock %}
+
+{% block content %}
+<nav aria-label="breadcrumb" class="mb-4">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{{ url_for('experiment.list_experiments') }}">Experiments</a></li>
+        <li class="breadcrumb-item active">{{ experiment.title }}</li>
+    </ol>
+</nav>
+
+<div class="row">
+    <div class="col-lg-8">
+        <!-- Simulator Section -->
+        <div class="card lab-card mb-4 overflow-hidden">
+            <div class="card-header bg-white border-0 py-3 d-flex justify-content-between align-items-center">
+                <h5 class="mb-0 fw-bold"><i class="bi bi-cpu text-primary me-2"></i>{{ _('Virtual Workspace') }}</h5>
+                <span class="badge bg-success-subtle text-success">{{ _('Wokwi Engine Active') }}</span>
+            </div>
+            <div class="card-body p-0">
+                <iframe src="{{ experiment.wokwi_url }}" width="100%" height="600" frameborder="0"></iframe>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-4">
+        <!-- Lab Info -->
+        <div class="card lab-card mb-4">
+            <div class="card-body">
+                <h3 class="fw-bold mb-3">{{ experiment.title }}</h3>
+                <div class="mb-4">
+                    <span
+                        class="badge {% if experiment.difficulty == 'easy' %}bg-success{% elif experiment.difficulty == 'medium' %}bg-warning{% else %}bg-danger{% endif %} me-2">
+                        {{ experiment.difficulty|capitalize }}
+                    </span>
+                    <span class="badge bg-secondary">{{ experiment.type|replace('_', ' ')|upper }}</span>
+                </div>
+
+                <h6 class="fw-bold mb-2">{{ _('Description') }}</h6>
+                <p class="text-muted small mb-4">{{ experiment.description }}</p>
+
+                {% if experiment.instructions %}
+                <h6 class="fw-bold mb-2">{{ _('Instructions') }}</h6>
+                <div class="small text-muted mb-4" style="line-height: 1.6;">
+                    {{ experiment.instructions|safe }}
+                </div>
+                {% endif %}
+
+                <hr>
+
+                <!-- Submission Form -->
+                <h6 class="fw-bold mb-3">{{ _('Submit Results') }}</h6>
+                <form action="{{ url_for('experiment.submit', id=experiment.id) }}" method="POST">
+                    <div class="mb-3">
+                        <label class="form-label small text-muted">{{ _('Observations / Console Output') }}</label>
+                        <textarea name="result_text" class="form-control" rows="4"
+                            placeholder="{{ _('Paste your results or observations here...') }}" required></textarea>
+                    </div>
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-primary">{{ _('Submit for Grading') }}</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Expected Result Hint -->
+        <div class="alert alert-info border-0 shadow-sm" role="alert">
+            <h6 class="alert-heading fw-bold"><i class="bi bi-lightbulb me-2"></i>{{ _('Expected Result') }}</h6>
+            <p class="small mb-0">{% if experiment.expected_result %}{{ experiment.expected_result }}{% else %}{{
+                _('Wait for the simulation to finish and observe the output!') }}{% endif %}</p>
+        </div>
+    </div>
+</div>
+{% endblock %}

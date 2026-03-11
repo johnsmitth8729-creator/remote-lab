@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+
+{% block title %}Profile - RemoteLab{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <h2 class="section-title mb-4">My Profile</h2>
+
+        <div class="row g-4">
+            <div class="col-md-4 text-center">
+                <div class="card lab-card p-4 h-100">
+                    <div class="mb-3">
+                        <i class="bi bi-person-circle text-primary" style="font-size: 5rem;"></i>
+                    </div>
+                    <h4 class="fw-bold mb-1">{{ user.name }}</h4>
+                    <p class="text-muted small">{{ user.role|title }}</p>
+                    <hr>
+                    <div class="text-start">
+                        <div class="small text-muted mb-1">Email</div>
+                        <div class="fw-bold mb-3">{{ user.email }}</div>
+                        <div class="small text-muted mb-1">Joined</div>
+                        <div class="fw-bold">{{ user.created_at.strftime('%B %d, %Y') }}</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-8">
+                <div class="card lab-card p-4 h-100">
+                    <h5 class="fw-bold mb-4">Achievements & Badges</h5>
+                    <div class="row g-3">
+                        {% if user.badges_awarded %}
+                        {% for ub in user.badges_awarded %}
+                        <div class="col-6 col-sm-4 text-center">
+                            <div class="p-3 border rounded-3 bg-light">
+                                <i class="bi {{ ub.badge.icon }} text-warning fs-1"></i>
+                                <div class="small fw-bold mt-2">{{ ub.badge.name }}</div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                        {% else %}
+                        <div class="col-12 text-center py-5 text-muted">
+                            <i class="bi bi-award fs-1 d-block mb-3"></i>
+                            No badges earned yet. Keep experimenting!
+                        </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="mt-5">
+                        <h5 class="fw-bold mb-3">Level Progress</h5>
+                        <div class="d-flex justify-content-between mb-2">
+                            <span class="small text-muted">Experience Points</span>
+                            <span class="small fw-bold">{{ user.points }} / 1000</span>
+                        </div>
+                        <div class="progress" style="height: 10px;">
+                            <div class="progress-bar bg-primary" style="width: {{ (user.points / 10)|int }}%"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

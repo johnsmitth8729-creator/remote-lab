@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="{{ request.cookies.get('lang', 'en') }}">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ _('Remote Virtual Laboratory') }}</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/static/css/style.css" rel="stylesheet">
+</head>
+
+<body class="bg-light">
+
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="/">{{ _('Virtual Lab') }}</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    {% if user %}
+                    <!-- Language Selector (Logged in) -->
+                    <li class="nav-item dropdown me-3">
+                        <a class="nav-link dropdown-toggle" href="#" id="langDropdown" role="button"
+                            data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="bi bi-globe"></i> {{ request.cookies.get('lang', 'en').upper() }}
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end shadow-sm" aria-labelledby="langDropdown">
+                            <li><a class="dropdown-item" href="/set_language/en">English</a></li>
+                            <li><a class="dropdown-item" href="/set_language/ru">Русский</a></li>
+                            <li><a class="dropdown-item" href="/set_language/uz">O'zbek</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('user.dashboard') }}">{{ _('Dashboard') }}</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('experiment.list_experiments') }}">{{ _('Experiments')
+                            }}</a>
+                    </li>
+                    <li class="nav-item">
+                        <span class="nav-link text-white fw-medium">| {{ user.name }} ({{ user.role }}) |</span>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link btn btn-sm btn-danger text-white ms-2" href="{{ url_for('auth.logout') }}">{{
+                            _('Logout') }}</a>
+                    </li>
+                    {% else %}
+                    <!-- Language Selector (Logged out) -->
+                    <li class="nav-item dropdown me-3">
+                        <a class="nav-link dropdown-toggle" href="#" id="langDropdownOut" role="button"
+                            data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="bi bi-globe"></i> {{ request.cookies.get('lang', 'en').upper() }}
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end shadow-sm" aria-labelledby="langDropdownOut">
+                            <li><a class="dropdown-item" href="/set_language/en">English</a></li>
+                            <li><a class="dropdown-item" href="/set_language/ru">Русский</a></li>
+                            <li><a class="dropdown-item" href="/set_language/uz">O'zbek</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('auth.login') }}">{{ _('Login') }}</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('auth.register') }}">{{ _('Register') }}</a>
+                    </li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Flash Messages Component -->
+    <div class="container mt-3">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+        {% for category, message in messages %}
+        <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        {% endfor %}
+        {% endif %}
+        {% endwith %}
+    </div>
+
+    <main class="container mt-4 mb-5">
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer class="bg-dark text-white text-center py-3 mt-auto">
+        <div class="container text-center">
+            <p class="mb-0">&copy; 2026 {{ _('Remote Virtual Laboratory Platform. All rights reserved.') }}</p>
+        </div>
+    </footer>
+
+    <!-- Bootstrap 5 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="/static/js/main.js"></script>
+</body>
+
+</html>

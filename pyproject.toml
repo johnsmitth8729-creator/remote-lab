@@ -1,0 +1,24 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "remote-virtual-lab"
+version = "1.0.0"
+description = "Remote Virtual Laboratory Platform - Complete Flask Application"
+requires-python = ">=3.9"
+dependencies = [
+    "Flask==3.0.0",
+    "Flask-SQLAlchemy==3.1.1",
+    "Flask-JWT-Extended==4.5.3",
+    "python-dotenv==1.0.0",
+    "Werkzeug==3.0.1",
+    "psycopg2-binary==2.9.9",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest==7.4.3",
+    "pytest-cov==4.1.0",
+    "black==23.12.0",
+]

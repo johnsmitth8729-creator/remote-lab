@@ -1,0 +1,143 @@
+{% extends "base.html" %}
+
+{% block title %}Teacher Admin - RemoteLab{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="section-title mb-0">Teacher Admin Panel</h2>
+    <a href="{{ url_for('admin.create_experiment') }}" class="btn btn-primary">
+        <i class="bi bi-plus-circle me-2"></i>New Experiment
+    </a>
+</div>
+
+<!-- Stats Row -->
+<div class="row g-4 mb-5">
+    <div class="col-md-4">
+        <div class="card lab-card text-center p-3">
+            <div class="card-body">
+                <div class="text-muted small mb-1">Total Students</div>
+                <div class="h2 fw-bold text-primary">{{ stats.students }}</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card lab-card text-center p-3">
+            <div class="card-body">
+                <div class="text-muted small mb-1">Active Experiments</div>
+                <div class="h2 fw-bold text-info">{{ stats.experiments }}</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card lab-card text-center p-3">
+            <div class="card-body">
+                <div class="text-muted small mb-1">Total Submissions</div>
+                <div class="h2 fw-bold text-success">{{ stats.submissions }}</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <!-- Recent Submissions for Grading -->
+    <div class="col-12">
+        <div class="card lab-card">
+            <div class="card-header bg-white py-3">
+                <h5 class="mb-0 fw-bold">Recent Submissions for Review</h5>
+            </div>
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="bg-light">
+                        <tr>
+                            <th>Student</th>
+                            <th>Experiment</th>
+                            <th>Date</th>
+                            <th>Status</th>
+                            <th>Score</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% if submissions %}
+                        {% for submission in submissions %}
+                        <tr>
+                            <td>
+                                <div class="fw-bold">{{ submission.student.name }}</div>
+                                <div class="small text-muted">{{ submission.student.email }}</div>
+                            </td>
+                            <td>{{ submission.experiment.title }}</td>
+                            <td>{{ submission.submitted_at.strftime('%Y-%m-%d %H:%M') }}</td>
+                            <td>
+                                {% if submission.score %}
+                                <span class="badge bg-success">Graded</span>
+                                {% else %}
+                                <span class="badge bg-warning">Pending</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if submission.score %}
+                                {{ submission.score }}/100
+                                {% else %}
+                                -
+                                {% endif %}
+                            </td>
+                            <td>
+                                <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal"
+                                    data-bs-target="#gradeModal{{ submission.id }}">
+                                    Review
+                                </button>
+
+                                <!-- Grade Modal -->
+                                <div class="modal fade" id="gradeModal{{ submission.id }}" tabindex="-1">
+                                    <div class="modal-dialog">
+                                        <div class="modal-content">
+                                            <form action="{{ url_for('admin.grade_submission', id=submission.id) }}"
+                                                method="POST">
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title">Grade Submission</h5>
+                                                    <button type="button" class="btn-close"
+                                                        data-bs-dismiss="modal"></button>
+                                                </div>
+                                                <div class="modal-body">
+                                                    <div class="mb-3">
+                                                        <label class="form-label fw-bold">Student's
+                                                            Observations:</label>
+                                                        <div class="bg-light p-3 rounded border small">
+                                                            {{ submission.result_text or 'No text provided.' }}
+                                                        </div>
+                                                    </div>
+                                                    <div class="mb-3">
+                                                        <label class="form-label">Score (0-100)</label>
+                                                        <input type="number" name="score" class="form-control" min="0"
+                                                            max="100" required value="{{ submission.score or '' }}">
+                                                    </div>
+                                                    <div class="mb-3">
+                                                        <label class="form-label">Feedback</label>
+                                                        <textarea name="feedback" class="form-control"
+                                                            rows="3">{{ submission.feedback or '' }}</textarea>
+                                                    </div>
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button type="button" class="btn btn-secondary"
+                                                        data-bs-dismiss="modal">Close</button>
+                                                    <button type="submit" class="btn btn-primary">Save Grade</button>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                        {% else %}
+                        <tr>
+                            <td colspan="6" class="text-center py-5 text-muted">No submissions yet.</td>
+                        </tr>
+                        {% endif %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
