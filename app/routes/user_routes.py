@@ -10,6 +10,9 @@ user_bp = Blueprint('user', __name__)
 def dashboard():
     user_id = get_jwt_identity()
     user = User.query.get(user_id)
+    if not user:
+        flash('Sessiya muddati tugagan yoki foydalanuvchi topilmadi. Iltimos, qayta kiring.', 'warning')
+        return redirect(url_for('auth.login'))
     
     recent_submissions = Submission.query.filter_by(user_id=user_id)\
         .order_by(Submission.submitted_at.desc()).limit(5).all()
@@ -36,6 +39,10 @@ def dashboard():
 def profile():
     user_id = get_jwt_identity()
     user = User.query.get(user_id)
+    if not user:
+        flash('Sessiya muddati tugagan yoki foydalanuvchi topilmadi. Iltimos, qayta kiring.', 'warning')
+        return redirect(url_for('auth.login'))
+        
     return render_template('dashboard/profile.html', user=user)
 
 @user_bp.route('/submissions')

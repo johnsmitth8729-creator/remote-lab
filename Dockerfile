@@ -22,7 +22,15 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY . /app/
 
 # Expose port
+<<<<<<< HEAD
 EXPOSE 5000
 
 # Run the application
 CMD ["gunicorn", "--bind", "0.0.0.0:5000", "run:app"]
+=======
+EXPOSE 10000
+
+# Run the application
+CMD ["sh", "-c", "gunicorn --bind 0.0.0.0:${PORT:-10000} run:app"]
+
+>>>>>>> 14c6244 (Updated UI and experiment pages)

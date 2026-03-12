@@ -10,7 +10,7 @@
     </ol>
 </nav>
 
-<div class="row">
+<div class="row flex-column-reverse flex-lg-row">
     <div class="col-lg-8">
         <!-- Simulator Section -->
         <div class="card lab-card mb-4 overflow-hidden">
@@ -19,7 +19,12 @@
                 <span class="badge bg-success-subtle text-success">{{ _('Wokwi Engine Active') }}</span>
             </div>
             <div class="card-body p-0">
-                <iframe src="{{ experiment.wokwi_url }}" width="100%" height="600" frameborder="0"></iframe>
+                <div class="ratio ratio-4x3 d-lg-none">
+                    <iframe src="{{ experiment.wokwi_url }}" frameborder="0" allowfullscreen></iframe>
+                </div>
+                <div class="d-none d-lg-block">
+                    <iframe src="{{ experiment.wokwi_url }}" width="100%" height="600" frameborder="0"></iframe>
+                </div>
             </div>
         </div>
     </div>
@@ -47,18 +52,44 @@
                 </div>
                 {% endif %}
 
+                {% if last_submission %}
+                <div
+                    class="bg-light p-3 rounded-3 mb-4 border-start border-4 {% if last_submission.score %}border-success{% else %}border-warning{% endif %}">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <h6 class="fw-bold mb-0">{{ _('Last Submission Status') }}</h6>
+                        <span class="badge {% if last_submission.score %}bg-success{% else %}bg-warning{% endif %}">
+                            {% if last_submission.score %}Graded{% else %}Pending{% endif %}
+                        </span>
+                    </div>
+                    <div class="small text-muted mb-1">
+                        <i class="bi bi-calendar3 me-1"></i> {{ last_submission.submitted_at.strftime('%Y-%m-%d %H:%M')
+                        }}
+                    </div>
+                    {% if last_submission.score %}
+                    <div class="text-primary fw-bold small">
+                        <i class="bi bi-star-fill me-1"></i> Score: {{ last_submission.score }} pts
+                    </div>
+                    {% endif %}
+                </div>
+                {% endif %}
+
                 <hr>
 
                 <!-- Submission Form -->
-                <h6 class="fw-bold mb-3">{{ _('Submit Results') }}</h6>
+                <h6 class="fw-bold mb-3">{% if last_submission %}{{ _('Re-submit Results') }}{% else %}{{ _('Submit
+                    Results') }}{% endif %}</h6>
                 <form action="{{ url_for('experiment.submit', id=experiment.id) }}" method="POST">
                     <div class="mb-3">
                         <label class="form-label small text-muted">{{ _('Observations / Console Output') }}</label>
                         <textarea name="result_text" class="form-control" rows="4"
-                            placeholder="{{ _('Paste your results or observations here...') }}" required></textarea>
+                            placeholder="{{ _('Paste your results or observations here...') }}"
+                            required>{% if last_submission %}{{ last_submission.result_text }}{% endif %}</textarea>
                     </div>
                     <div class="d-grid">
-                        <button type="submit" class="btn btn-primary">{{ _('Submit for Grading') }}</button>
+                        <button type="submit" class="btn btn-primary">
+                            {% if last_submission %}{{ _('Update Submission') }}{% else %}{{ _('Submit for Grading')
+                            }}{% endif %}
+                        </button>
                     </div>
                 </form>
             </div>

@@ -8,6 +8,13 @@ admin_bp = Blueprint('admin', __name__)
 def admin_required(fn):
     @jwt_required()
     def wrapper(*args, **kwargs):
+        from flask_jwt_extended import get_jwt_identity
+        user_id = get_jwt_identity()
+        user = User.query.get(user_id)
+        if not user:
+            flash('Sessiya muddati tugagan yoki foydalanuvchi topilmadi. Iltimos, qayta kiring.', 'warning')
+            return redirect(url_for('auth.login'))
+            
         claims = get_jwt()
         if claims.get('role') != 'teacher':
             flash('Admin access required.', 'danger')
@@ -97,7 +104,10 @@ def grade_submission(id):
     
     # Update student points
     student = User.query.get(submission.user_id)
-    student.points += int(score)
+    if student:
+        student.points += int(score)
+    else:
+        flash('Talaba topilmadi, ball qo\'shilmadi.', 'warning')
     
     db.session.commit()
     flash('Submission graded successfully!', 'success')

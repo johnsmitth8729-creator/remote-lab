@@ -24,6 +24,12 @@ def create_app(config_class=Config):
     bcrypt.init_app(app)
     migrate.init_app(app, db)
     babel.init_app(app, locale_selector=get_locale)
+    
+    @jwt.unauthorized_loader
+    def unauthorized_response(callback):
+        from flask import flash, redirect, url_for
+        flash('Siz ushbu sahifani ko\'rish uchun tizimga kirishingiz kerak.', 'warning')
+        return redirect(url_for('auth.login'))
 
     @app.context_processor
     def inject_globals():
@@ -67,11 +73,11 @@ def create_app(config_class=Config):
     @app.errorhandler(404)
     def page_not_found(e):
         from flask import render_template
-        return render_template('errors/404.html'), 404
+        return render_template('404.html'), 404
 
     @app.errorhandler(500)
     def internal_server_error(e):
         from flask import render_template
-        return render_template('errors/500.html'), 500
+        return render_template('500.html'), 500
 
     return app

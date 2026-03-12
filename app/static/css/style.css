@@ -7,15 +7,17 @@
   --text-muted: #64748B;
   --card-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
   --sidebar-width: 260px;
+  --bottom-nav-height: 65px;
 }
 
+/* ===================== BASE ===================== */
 body {
   background-color: var(--bg-color);
   font-family: 'Inter', system-ui, -apple-system, sans-serif;
   color: var(--text-main);
 }
 
-/* Sidebar Styling */
+/* ===================== DESKTOP SIDEBAR ===================== */
 .sidebar {
   width: var(--sidebar-width);
   height: 100vh;
@@ -26,6 +28,7 @@ body {
   color: white;
   padding-top: 2rem;
   z-index: 1000;
+  flex-direction: column;
 }
 
 .sidebar .nav-link {
@@ -34,6 +37,7 @@ body {
   display: flex;
   align-items: center;
   transition: all 0.2s;
+  border-radius: 0;
 }
 
 .sidebar .nav-link:hover,
@@ -47,21 +51,156 @@ body {
   font-size: 1.25rem;
 }
 
-/* Main Content Area */
+/* ===================== MOBILE DRAWER ===================== */
+.mobile-drawer {
+  position: fixed;
+  top: 0;
+  left: -100%;
+  width: 80%;
+  max-width: 300px;
+  height: 100vh;
+  background-color: var(--secondary-color);
+  color: white;
+  z-index: 1050;
+  transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+}
+
+.mobile-drawer.open {
+  left: 0;
+}
+
+.mobile-drawer-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.2rem 1.25rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  flex-shrink: 0;
+}
+
+.mobile-drawer .nav-link {
+  color: #94A3B8;
+  padding: 0.85rem 1.5rem;
+  display: flex;
+  align-items: center;
+  transition: all 0.2s;
+  font-size: 0.95rem;
+}
+
+.mobile-drawer .nav-link:hover,
+.mobile-drawer .nav-link.active {
+  color: white;
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.mobile-drawer .nav-link i {
+  margin-right: 0.85rem;
+  font-size: 1.2rem;
+}
+
+/* Overlay backdrop */
+.drawer-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 1049;
+  backdrop-filter: blur(2px);
+}
+
+.drawer-overlay.open {
+  display: block;
+}
+
+/* ===================== MOBILE BOTTOM NAV ===================== */
+.mobile-bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: var(--bottom-nav-height);
+  background: white;
+  border-top: 1px solid #E2E8F0;
+  display: flex;
+  align-items: stretch;
+  z-index: 1000;
+  box-shadow: 0 -4px 12px rgb(0 0 0 / 0.08);
+}
+
+.mobile-nav-item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  color: var(--text-muted);
+  font-size: 0.65rem;
+  font-weight: 500;
+  padding: 0.4rem 0;
+  transition: color 0.2s;
+  gap: 3px;
+}
+
+.mobile-nav-item i {
+  font-size: 1.35rem;
+  line-height: 1;
+}
+
+.mobile-nav-item.active {
+  color: var(--primary-color);
+}
+
+.mobile-nav-item:hover {
+  color: var(--primary-color);
+}
+
+/* Extra bottom padding so content doesn't hide behind bottom nav on mobile */
+.pb-mobile {
+  padding-bottom: 1rem;
+}
+
+@media (max-width: 991.98px) {
+  .pb-mobile {
+    padding-bottom: calc(var(--bottom-nav-height) + 1.5rem);
+  }
+}
+
+/* ===================== MAIN CONTENT AREA ===================== */
 .main-content {
   margin-left: var(--sidebar-width);
-  padding: 2rem;
   min-height: 100vh;
 }
 
-/* Navbar */
+@media (max-width: 991.98px) {
+  .main-content {
+    margin-left: 0;
+  }
+}
+
+/* ===================== NAVBAR ===================== */
 .navbar-custom {
   background: white;
   box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1);
-  padding: 0.5rem 2rem;
+  padding: 0.5rem 0;
 }
 
-/* Cards */
+.navbar-hamburger {
+  color: var(--secondary-color);
+  background: transparent;
+  border: none;
+  padding: 0.25rem 0.5rem;
+}
+
+.navbar-hamburger:hover {
+  background: #F1F5F9;
+  border-radius: 6px;
+}
+
+/* ===================== CARDS ===================== */
 .lab-card {
   border: none;
   border-radius: 12px;
@@ -70,10 +209,10 @@ body {
 }
 
 .lab-card:hover {
-  transform: translateY(-4px);
+  transform: translateY(-3px);
 }
 
-/* Buttons */
+/* ===================== BUTTONS ===================== */
 .btn-primary {
   background-color: var(--primary-color);
   border: none;
@@ -85,27 +224,53 @@ body {
   background-color: #1D4ED8;
 }
 
-/* Typography */
-h1,
-h2,
-h3 {
+/* ===================== TYPOGRAPHY ===================== */
+h1, h2, h3 {
   font-weight: 700;
   color: var(--secondary-color);
 }
 
 .section-title {
-  margin-bottom: 2rem;
+  margin-bottom: 1.5rem;
   border-left: 4px solid var(--primary-color);
   padding-left: 1rem;
 }
 
-/* Responsive */
-@media (max-width: 992px) {
-  .sidebar {
-    transform: translateX(-100%);
+/* ===================== EXPERIMENT LIST - MOBILE FILTER FIX ===================== */
+@media (max-width: 767.98px) {
+  .experiment-filters {
+    flex-direction: column !important;
+    gap: 0.5rem !important;
+    width: 100%;
   }
 
-  .main-content {
-    margin-left: 0;
+  .experiment-filters select,
+  .experiment-filters button {
+    width: 100% !important;
   }
+
+  /* Iframe in experiment detail */
+  iframe {
+    height: 380px !important;
+  }
+
+  /* Table fix for admin dashboard */
+  .table-responsive {
+    font-size: 0.82rem;
+  }
+
+  /* Section title smaller on mobile */
+  .section-title {
+    font-size: 1.2rem;
+  }
+
+  /* Stat cards remove hover jump on touch */
+  .lab-card:hover {
+    transform: none;
+  }
+}
+
+/* ===================== UTILITY ===================== */
+.container-fluid {
+  max-width: 1400px;
 }

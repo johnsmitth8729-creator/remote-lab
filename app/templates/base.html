@@ -18,13 +18,15 @@
 
 <body>
 
-    {% if request.blueprint != 'auth' and request.path != '/' %}
-    <!-- Sidebar -->
-    <div class="sidebar d-none d-lg-block">
-        <div class="px-4 mb-5">
-            <h4 class="text-white fw-bold">Remote<span class="text-primary">Lab</span></h4>
+    {% set is_app_page = request.blueprint != 'auth' and request.path != '/' %}
+
+    {% if is_app_page %}
+    <!-- ======= DESKTOP SIDEBAR (lg+) ======= -->
+    <div class="sidebar d-none d-lg-flex flex-column">
+        <div class="px-4 mb-4">
+            <h4 class="text-white fw-bold mb-0">Remote<span class="text-primary">Lab</span></h4>
         </div>
-        <nav class="nav flex-column">
+        <nav class="nav flex-column flex-grow-1">
             <a class="nav-link {% if request.endpoint == 'user.dashboard' %}active{% endif %}"
                 href="{{ url_for('user.dashboard') }}">
                 <i class="bi bi-speedometer2"></i> {{ _('Dashboard') }}
@@ -37,39 +39,108 @@
                 href="{{ url_for('user.submissions') }}">
                 <i class="bi bi-journal-text"></i> {{ _('My Submissions') }}
             </a>
-            <a class="nav-link" href="{{ url_for('user.profile') }}">
+            <a class="nav-link {% if request.endpoint == 'user.profile' %}active{% endif %}"
+                href="{{ url_for('user.profile') }}">
                 <i class="bi bi-person"></i> {{ _('Profile') }}
             </a>
             {% if get_jwt() and get_jwt().get('role') == 'teacher' %}
             <div class="px-4 mt-4 mb-2">
                 <small class="text-uppercase text-muted fw-bold" style="font-size: 0.7rem;">Teacher Panel</small>
             </div>
-            <a class="nav-link" href="{{ url_for('admin.dashboard') }}">
+            <a class="nav-link {% if request.endpoint == 'admin.dashboard' %}active{% endif %}"
+                href="{{ url_for('admin.dashboard') }}">
                 <i class="bi bi-shield-lock"></i> Admin Console
             </a>
             {% endif %}
-            <div class="mt-auto mb-4">
-                <a class="nav-link text-danger" href="{{ url_for('auth.logout') }}">
-                    <i class="bi bi-box-arrow-right"></i> {{ _('Logout') }}
-                </a>
-            </div>
         </nav>
+        <div class="px-0 pb-4">
+            <a class="nav-link text-danger" href="{{ url_for('auth.logout') }}">
+                <i class="bi bi-box-arrow-right"></i> {{ _('Logout') }}
+            </a>
+        </div>
     </div>
+
+    <!-- ======= MOBILE SIDEBAR DRAWER (hidden by default) ======= -->
+    <div class="mobile-drawer d-lg-none" id="mobileDrawer">
+        <div class="mobile-drawer-header">
+            <h5 class="text-white fw-bold mb-0">Remote<span class="text-primary">Lab</span></h5>
+            <button class="btn btn-sm text-white" id="closeDrawerBtn">
+                <i class="bi bi-x-lg fs-5"></i>
+            </button>
+        </div>
+        <nav class="nav flex-column flex-grow-1 pt-2">
+            <a class="nav-link {% if request.endpoint == 'user.dashboard' %}active{% endif %}"
+                href="{{ url_for('user.dashboard') }}">
+                <i class="bi bi-speedometer2"></i> {{ _('Dashboard') }}
+            </a>
+            <a class="nav-link {% if request.endpoint == 'experiment.list_experiments' %}active{% endif %}"
+                href="{{ url_for('experiment.list_experiments') }}">
+                <i class="bi bi-cpu"></i> {{ _('Experiments') }}
+            </a>
+            <a class="nav-link {% if request.endpoint == 'user.submissions' %}active{% endif %}"
+                href="{{ url_for('user.submissions') }}">
+                <i class="bi bi-journal-text"></i> {{ _('My Submissions') }}
+            </a>
+            <a class="nav-link {% if request.endpoint == 'user.profile' %}active{% endif %}"
+                href="{{ url_for('user.profile') }}">
+                <i class="bi bi-person"></i> {{ _('Profile') }}
+            </a>
+            {% if get_jwt() and get_jwt().get('role') == 'teacher' %}
+            <div class="px-4 mt-4 mb-2">
+                <small class="text-uppercase text-muted fw-bold" style="font-size: 0.7rem;">Teacher Panel</small>
+            </div>
+            <a class="nav-link {% if request.endpoint == 'admin.dashboard' %}active{% endif %}"
+                href="{{ url_for('admin.dashboard') }}">
+                <i class="bi bi-shield-lock"></i> Admin Console
+            </a>
+            {% endif %}
+        </nav>
+        <div class="pb-4 border-top border-secondary mt-3 pt-3">
+            <div class="px-4 mb-3">
+                <span class="text-muted small">{{ _('Language') }}</span>
+                <div class="d-flex gap-2 mt-2">
+                    <a href="{{ url_for('set_language', lang='en') }}"
+                        class="btn btn-sm btn-outline-secondary flex-fill">EN</a>
+                    <a href="{{ url_for('set_language', lang='uz') }}"
+                        class="btn btn-sm btn-outline-secondary flex-fill">UZ</a>
+                    <a href="{{ url_for('set_language', lang='ru') }}"
+                        class="btn btn-sm btn-outline-secondary flex-fill">RU</a>
+                </div>
+            </div>
+            <a class="nav-link text-danger" href="{{ url_for('auth.logout') }}">
+                <i class="bi bi-box-arrow-right"></i> {{ _('Logout') }}
+            </a>
+        </div>
+    </div>
+    <!-- Backdrop overlay for drawer -->
+    <div class="drawer-overlay d-lg-none" id="drawerOverlay"></div>
     {% endif %}
 
-    <div class="{% if request.blueprint != 'auth' and request.path != '/' %}main-content{% endif %}">
-        <!-- Top Navbar -->
-        <nav class="navbar navbar-expand-lg navbar-custom sticky-top">
-            <div class="container-fluid">
-                {% if request.blueprint == 'auth' or request.path == '/' %}
+    <div class="{% if is_app_page %}main-content{% endif %}">
+        <!-- ======= TOP NAVBAR ======= -->
+        <nav class="navbar navbar-custom sticky-top">
+            <div class="container-fluid px-3">
+                {% if is_app_page %}
+                <!-- Mobile: Hamburger + brand -->
+                <div class="d-flex align-items-center d-lg-none">
+                    <button class="btn btn-sm me-2 navbar-hamburger" id="openDrawerBtn" type="button">
+                        <i class="bi bi-list fs-4"></i>
+                    </button>
+                    <a class="navbar-brand fw-bold mb-0" href="{{ url_for('user.dashboard') }}">Remote<span
+                            class="text-primary">Lab</span></a>
+                </div>
+                <!-- Desktop: spacer so right items align properly -->
+                <div class="d-none d-lg-block"></div>
+                {% else %}
                 <a class="navbar-brand fw-bold" href="{{ url_for('index') }}">Remote<span
                         class="text-primary">Lab</span></a>
-                {% endif %}
-
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent">
                     <span class="navbar-toggler-icon"></span>
                 </button>
+                {% endif %}
 
+                <!-- Right side nav items -->
+                {% if not is_app_page %}
                 <div class="collapse navbar-collapse" id="navbarContent">
                     <ul class="navbar-nav ms-auto align-items-center">
                         <!-- Language Switcher -->
@@ -86,7 +157,6 @@
                                 </li>
                             </ul>
                         </li>
-
                         {% if not get_jwt_identity() %}
                         <li class="nav-item">
                             <a class="btn btn-outline-primary me-2" href="{{ url_for('auth.login') }}">{{ _('Login')
@@ -113,10 +183,44 @@
                         {% endif %}
                     </ul>
                 </div>
+                {% else %}
+                <!-- App pages: show language and user icon on right -->
+                <div class="d-flex align-items-center gap-2">
+                    <div class="dropdown">
+                        <a class="nav-link dropdown-toggle text-dark" href="#" role="button" data-bs-toggle="dropdown">
+                            <i class="bi bi-globe"></i>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li><a class="dropdown-item" href="{{ url_for('set_language', lang='en') }}">🇬🇧
+                                    English</a></li>
+                            <li><a class="dropdown-item" href="{{ url_for('set_language', lang='uz') }}">🇺🇿
+                                    O'zbekcha</a></li>
+                            <li><a class="dropdown-item" href="{{ url_for('set_language', lang='ru') }}">🇷🇺
+                                    Русский</a></li>
+                        </ul>
+                    </div>
+                    {% if get_jwt_identity() %}
+                    <div class="dropdown d-none d-lg-block">
+                        <a class="nav-link dropdown-toggle text-dark" href="#" role="button" data-bs-toggle="dropdown">
+                            <i class="bi bi-person-circle fs-5"></i>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li><a class="dropdown-item" href="{{ url_for('user.profile') }}">{{ _('Profile') }}</a>
+                            </li>
+                            <li>
+                                <hr class="dropdown-divider">
+                            </li>
+                            <li><a class="dropdown-item text-danger" href="{{ url_for('auth.logout') }}">{{ _('Logout')
+                                    }}</a></li>
+                        </ul>
+                    </div>
+                    {% endif %}
+                </div>
+                {% endif %}
             </div>
         </nav>
 
-        <div class="container mt-4">
+        <div class="container-fluid px-3 px-md-4 mt-3 mb-5 pb-mobile">
             <!-- Flash Messages -->
             {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}
@@ -133,10 +237,43 @@
         </div>
     </div>
 
+    {% if is_app_page %}
+    <!-- ======= MOBILE BOTTOM NAVIGATION BAR ======= -->
+    <nav class="mobile-bottom-nav d-lg-none">
+        <a href="{{ url_for('user.dashboard') }}"
+            class="mobile-nav-item {% if request.endpoint == 'user.dashboard' %}active{% endif %}">
+            <i class="bi bi-speedometer2"></i>
+            <span>{{ _('Dashboard') }}</span>
+        </a>
+        <a href="{{ url_for('experiment.list_experiments') }}"
+            class="mobile-nav-item {% if request.endpoint == 'experiment.list_experiments' or request.endpoint == 'experiment.detail' %}active{% endif %}">
+            <i class="bi bi-cpu"></i>
+            <span>{{ _('Experiments') }}</span>
+        </a>
+        <a href="{{ url_for('user.submissions') }}"
+            class="mobile-nav-item {% if request.endpoint == 'user.submissions' %}active{% endif %}">
+            <i class="bi bi-journal-text"></i>
+            <span>{{ _('Submissions') }}</span>
+        </a>
+        <a href="{{ url_for('user.profile') }}"
+            class="mobile-nav-item {% if request.endpoint == 'user.profile' %}active{% endif %}">
+            <i class="bi bi-person"></i>
+            <span>{{ _('Profile') }}</span>
+        </a>
+        {% if get_jwt() and get_jwt().get('role') == 'teacher' %}
+        <a href="{{ url_for('admin.dashboard') }}"
+            class="mobile-nav-item {% if request.endpoint == 'admin.dashboard' %}active{% endif %}">
+            <i class="bi bi-shield-lock"></i>
+            <span>Admin</span>
+        </a>
+        {% endif %}
+    </nav>
+    {% endif %}
+
     <!-- Bootstrap 5 JS Bundle -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <!-- Custom JS -->
-    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
     {% block extra_js %}{% endblock %}
 </body>
 
